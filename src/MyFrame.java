@@ -1,84 +1,170 @@
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.util.ArrayList;
+import java.util.Random;
 
-public class MyFrame extends JFrame implements ActionListener {
+public class MyFrame extends JFrame implements   KeyListener {
+
     private int num;
     private int cubeSize;
     private int step;
-    private JLabel label;
-    private Action UpButton;
+    private boolean up=true;
+    static ArrayList<Integer> number;
 
-    private Action DownButton;
+    private boolean down=false;
 
-    private Action LeftButton;
+    private boolean left=false;
 
-    private Action RightButton;
-    public MyFrame(){};
+    private boolean right=false;
+
+    private String str="a";
+    private boolean initGame=true;
+    private  Shake   shake;
+    private Apple apple;
+    public MyFrame(){
+        super();
+    };
     public MyFrame(int num,int cubeSize,int step){
         super("Shake javaGUI");
         super.setSize(num,num);
         super.setVisible(true);
         super.setLayout(null);
         super.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        super.setResizable(true);
+        super.addKeyListener(this);
         this.num=num;
         this.cubeSize=cubeSize;
         this.step=step;
-        UpButton=new UpAction();
-        DownButton=new DownAction();
-        LeftButton =new LeftAction();
-        RightButton=new RightAction();
-        Timer timer=new Timer(250,this);
-        label=new JLabel();
-        label.setBounds(randomNumber(),randomNumber(),cubeSize,cubeSize);
-        label.setBackground(Color.GREEN );
-        label.setOpaque(true);
-        super.setResizable(false);
-        super.add(label);
-        label.getInputMap().put(KeyStroke.getKeyStroke("UP"),"UpButton");
-        label.getActionMap().put("UpButton",UpButton);
-        label.getInputMap().put(KeyStroke.getKeyStroke("DOWN"),"DownButton");
-        label.getActionMap().put("DownButton",DownButton);
-        label.getInputMap().put(KeyStroke.getKeyStroke("LEFT"),"LeftButton");
-        label.getActionMap().put("LeftButton",LeftButton);
-        label.getInputMap().put(KeyStroke.getKeyStroke("RIGHT"),"RightButton");
-        label.getActionMap().put("RightButton",RightButton);
+        shake=new Shake();
+        shake.addShake(GetRandomNumber(),GetRandomNumber(),25);
+        super.add(shake);
+        apple =new Apple();
+        apple.addApple(GetRandomNumber(),GetRandomNumber());
+        super.add(apple);
 
+        LocationCube();
+
+        while(initGame){
+            timeDelay(750);
+            LocationCube();
+            System.out.println("Coordinate: "+ shake.getX()+" "+shake.getY());
+            if(initShakeApple()){
+                apple.setApple(GetRandomNumber(),GetRandomNumber());
+                apple.addApple(GetRandomNumber(),GetRandomNumber());
+                System.out.println("OK!");
+            }
+
+
+        }
 
     }
 
 
-    public  class UpAction extends AbstractAction {
+    @Override
+    public void keyTyped(KeyEvent e) {
 
-        public void actionPerformed(ActionEvent e){
-            label.setLocation(checkNumberNull(label.getX()),checkNumberNull(label.getY())-step);
-            System.out.println(label.getX()+" "+label.getY());
-        }
     }
-    public  class DownAction extends AbstractAction {
+    public void initApple(){
 
-        public void actionPerformed(ActionEvent e){
 
-            label.setLocation(checkNumberNull(label.getX()),checkNumberNull(label.getY())+step);
-            System.out.println(label.getX()+" "+label.getY());
-        }
     }
-    public  class LeftAction extends AbstractAction {
-
-        public void actionPerformed(ActionEvent e){
-
-            label.setLocation(checkNumberNull(label.getX()-step),checkNumberNull(label.getY()));
-            System.out.println(label.getX()+" "+label.getY());
+    @Override
+    public void keyPressed(KeyEvent e) {
+        switch (e.getKeyCode()){
+            case 87:{
+                up=true;
+                down=false;
+                left=false;
+                right=false;
+                //label.setLocation(checkNumberNull(label.getX()+step),checkNumberNull(label.getY()));
+                break;
+            }
+            case 38:{
+                up=true;
+                down=false;
+                left=false;
+                right=false;
+                //label.setLocation(checkNumberNull(label.getX()+step),checkNumberNull(label.getY()));
+                break;
+            }
+            case 83:{
+                up=false;
+                down=true;
+                left=false;
+                right=false;
+                break;
+            }
+            case 40:{
+                up=false;
+                down=true;
+                left=false;
+                right=false;
+                break;
+            }
+            case 65:{
+                up=false;
+                down=false;
+                left=true;
+                right=false;
+                break;
+            }case 37:{
+                up=false;
+                down=false;
+                left=true;
+                right=false;
+                break;
+            }
+            case 68:{
+                up=false;
+                down=false;
+                left=false;
+                right=true;
+                break;
+            }case 39:{
+                up=false;
+                down=false;
+                left=false;
+                right=true;
+                break;
+            }
+            case 81:{
+                initGame=false;
+            }
+            default:{
+                break;
+            }
         }
+        timeDelay(5);
+        System.out.println("Result" +e.getKeyCode());
+
     }
-    public  class RightAction extends AbstractAction {
 
-        public void actionPerformed(ActionEvent e){
+    @Override
+    public void keyReleased(KeyEvent e) {
 
-            label.setLocation(checkNumberNull(label.getX()+step),checkNumberNull(label.getY()));
-            System.out.println(label.getX()+" "+label.getY());
-        }
+    }
+
+    public void LocationCube(){
+
+            if(up ){
+                shake.setLocation(checkNumberNull(shake.getX()),checkNumberNull(shake.getY()-step));
+            }else if(down){
+                shake.setLocation(checkNumberNull(shake.getX()),checkNumberNull(shake.getY()+step));
+            }else if(left){
+                shake.setLocation(checkNumberNull(shake.getX()-step),checkNumberNull(shake.getY()));
+            }else if(right){
+                shake.setLocation(checkNumberNull(shake.getX()+step),checkNumberNull(shake.getY()));
+            }
+
+    }
+    public void timeDelay(int num){
+        try {
+            Thread.sleep(num);
+
+
+        } catch(InterruptedException ex) {}
+
     }
     public int checkNumberNull( int number){
         if(number>(super.getWidth()-(cubeSize)) ){
@@ -92,6 +178,31 @@ public class MyFrame extends JFrame implements ActionListener {
 
     }
     public int randomNumber(){
-        return (int)Math.random()*(num+1);
+        return  (int)Math.floor(Math.random()*(super.getWidth()-1)+1);
+
     }
+    public boolean initShakeApple(){
+        if(((int)Math.abs(shake.getX()-apple.getAppleX())<=5)&&((int)Math.abs(shake.getY()-apple.getAppleY())<=5)){
+            return true;
+        }
+        return false;
+    }
+    public int GetRandomNumber()
+    {
+        int check=0;
+        number=new ArrayList<Integer>();
+        if(number.isEmpty()){
+            for(int i=0;i<(num-40);i+=step){
+                number.add(check);
+                check+=step;
+            }
+        }
+        int min = 1;
+        int max = number.size()-1;
+        int diff = max - min;
+        Random random = new Random();
+        int i = random.nextInt(diff + 1) + min;
+        return number.get(i);
+    }
+
 }
