@@ -15,21 +15,27 @@ public class MyFrame extends JFrame implements   KeyListener {
     private boolean down=false;
 
     private boolean left=false;
-
+    private int checkNum;
     private boolean right=false;
 
     private String str="a";
     private boolean initGame=true;
+    private ArrayList<ShakeBlock> blockArr;
     private  Shake   shake;
+    private ShakeBlock shakeBlock;
     private Apple apple;
     public MyFrame(){
         super();
     };
     public MyFrame(int num,int cubeSize,int step){
+
         super("Shake javaGUI");
+
+        int check=1;
         super.setSize(num,num);
         super.setVisible(true);
         super.setLayout(null);
+
         super.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         super.setResizable(true);
         super.addKeyListener(this);
@@ -41,18 +47,60 @@ public class MyFrame extends JFrame implements   KeyListener {
         super.add(shake);
         apple =new Apple();
         apple.addApple(GetRandomNumber(),GetRandomNumber());
+        blockArr=new ArrayList<ShakeBlock>();
+        blockArr.add(new ShakeBlock());
+        super.add(blockArr.get(0));
+        shakeBlock=new ShakeBlock();
+
         super.add(apple);
+
 
         LocationCube();
 
         while(initGame){
             timeDelay(750);
+            int x=shake.getX();
+            int y=shake.getY();
+            shakeBlock.addShakeBlock(x,y);
             LocationCube();
             System.out.println("Coordinate: "+ shake.getX()+" "+shake.getY());
+
             if(initShakeApple()){
+
                 apple.setApple(GetRandomNumber(),GetRandomNumber());
                 apple.addApple(GetRandomNumber(),GetRandomNumber());
+                blockArr.add(new ShakeBlock());
+
+                super.add(blockArr.get(check));
+                check++;
+
+
+
                 System.out.println("OK!");
+            }
+            //shakeBlock.setShakeBlock(GetRandomNumber(),GetRandomNumber());
+            //shakeBlock.addShakeBlock(x,y);
+            //int x1=blockArr.get(0).getShakeBlockX();
+
+            ArrayList<Integer> x2=new ArrayList<Integer>();
+            //int y1=blockArr.get(0).getShakeBlockY();
+            ArrayList<Integer> y2=new ArrayList<Integer>();
+            for(int i=0;i< blockArr.size();i++){
+                x2.add(blockArr.get(i).getShakeBlockX());
+                y2.add(blockArr.get(i).getShakeBlockY());
+            }
+            blockArr.get(0).addShakeBlock(x,y);
+
+            x=shake.getX();
+            y=shake.getY();
+            for(int i=1;i<blockArr.size();i++){
+
+                blockArr.get(i).addShakeBlock(x2.get(i-1),y2.get(i-1));
+                blockArr.get(i).setShakeBlock(x2.get(i-1),y2.get(i-1));
+                if(shake.getX()==x2.get(i-1)&&shake.getY()==y2.get(i-1)){
+                    initGame=false;
+                }
+
             }
 
 
@@ -73,59 +121,92 @@ public class MyFrame extends JFrame implements   KeyListener {
     public void keyPressed(KeyEvent e) {
         switch (e.getKeyCode()){
             case 87:{
-                up=true;
-                down=false;
-                left=false;
-                right=false;
-                //label.setLocation(checkNumberNull(label.getX()+step),checkNumberNull(label.getY()));
+                if(checkNum!=83){
+                    up=true;
+                    down=false;
+                    left=false;
+                    right=false;
+                    checkNum=87;
+                }
+
+
                 break;
             }
             case 38:{
-                up=true;
-                down=false;
-                left=false;
-                right=false;
-                //label.setLocation(checkNumberNull(label.getX()+step),checkNumberNull(label.getY()));
+                if(checkNum!=40){
+                    up=true;
+                    down=false;
+                    left=false;
+                    right=false;
+                    checkNum=38;
+                }
+
                 break;
             }
             case 83:{
-                up=false;
-                down=true;
-                left=false;
-                right=false;
+                if(checkNum!=87){
+                    up=false;
+                    down=true;
+                    left=false;
+                    right=false;
+                    checkNum=83;
+
+                }
+
                 break;
             }
             case 40:{
-                up=false;
-                down=true;
-                left=false;
-                right=false;
+                if(checkNum!=38){
+                    up=false;
+                    down=true;
+                    left=false;
+                    right=false;
+                    checkNum=40;
+
+                }
                 break;
+
             }
             case 65:{
-                up=false;
-                down=false;
-                left=true;
-                right=false;
+                if(checkNum!=68){
+                    up=false;
+                    down=false;
+                    left=true;
+                    right=false;
+                    checkNum=65;
+                }
+
                 break;
             }case 37:{
-                up=false;
-                down=false;
-                left=true;
-                right=false;
+                if(checkNum!=39){
+                    up=false;
+                    down=false;
+                    left=true;
+                    right=false;
+                    checkNum=37;
+                }
+
                 break;
             }
             case 68:{
-                up=false;
-                down=false;
-                left=false;
-                right=true;
+                if(checkNum!=65){
+                    up=false;
+                    down=false;
+                    left=false;
+                    right=true;
+                    checkNum=68;
+                }
+
                 break;
             }case 39:{
-                up=false;
-                down=false;
-                left=false;
-                right=true;
+                if(checkNum!=37){
+                    up=false;
+                    down=false;
+                    left=false;
+                    right=true;
+                    checkNum=39;
+                }
+
                 break;
             }
             case 81:{
@@ -157,6 +238,7 @@ public class MyFrame extends JFrame implements   KeyListener {
                 shake.setLocation(checkNumberNull(shake.getX()+step),checkNumberNull(shake.getY()));
             }
 
+
     }
     public void timeDelay(int num){
         try {
@@ -182,7 +264,7 @@ public class MyFrame extends JFrame implements   KeyListener {
 
     }
     public boolean initShakeApple(){
-        if(((int)Math.abs(shake.getX()-apple.getAppleX())<=5)&&((int)Math.abs(shake.getY()-apple.getAppleY())<=5)){
+        if(((int)Math.abs(shake.getX()-apple.getAppleX())<=10)&&((int)Math.abs(shake.getY()-apple.getAppleY())<=10)){
             return true;
         }
         return false;
